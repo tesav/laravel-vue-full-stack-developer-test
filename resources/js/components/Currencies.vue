@@ -4,7 +4,7 @@
       <div class="col-md-8">
         <div class="card">
           <div class="card-header">
-            <div v-if="baseCurrencyCharCode">
+            <div v-if="baseCurrencyCharCode" class="mb-2">
               <button @click="setBaseCurrencyCharCode(null)">Back</button>
               Currency {{ baseCurrencyCharCode }}
             </div>

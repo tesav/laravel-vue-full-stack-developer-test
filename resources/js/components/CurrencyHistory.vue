@@ -1,6 +1,8 @@
 <template>
   <div>
-    <date-range @updateDateRange="updateDates" />
+    <div class="mb-2">
+      <date-range @updateDateRange="updateDates" />
+    </div>
 
     <pagination
       :list="dailyRates"
@@ -39,6 +41,7 @@ export default {
   },
 
   data: () => ({
+    timeout: null,
     dateRange: {
       startDate: moment().format("YYYY-MM-DD"),
       endDate: moment().format("YYYY-MM-DD"),
@@ -51,8 +54,11 @@ export default {
 
   watch: {
     dateRange() {
-      this.dailyRates = null;
-      this.loadPage();
+      clearInterval(this.timeout);
+      this.timeout = setTimeout(() => {
+        this.dailyRates = null;
+        this.loadPage();
+      }, 500);
     },
     charCode() {
       this.dailyRates = null;
