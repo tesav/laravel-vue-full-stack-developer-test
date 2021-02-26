@@ -1,50 +1,27 @@
 <template>
-  <div>
-    <div v-if="currencies === null" class="d-flex justify-content-center">
-      <div class="spinner-border" role="status">
-        <span class="sr-only">Loading...</span>
-      </div>
-    </div>
-    <div v-else-if="!currencies.length" class="d-flex justify-content-center">
-      <div>
-        <span>Not Found</span>
-      </div>
-    </div>
-    <div v-else>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Nominal</th>
-            <th>Rate</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="currency in currencies" :key="currency.id">
-            <td>{{ currency.name }}</td>
-            <td>{{ currency.nominal }}</td>
-            <td>{{ currency.rate }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <ul v-if="lastPage > 1" class="pagination">
-        <li
-          class="page-item"
-          v-for="link in links"
-          :key="link.label"
-          :class="{ active: link.active }"
-        >
-          <a
-            class="page-link"
-            :href="link.url"
-            @click.prevent="loadPage(link.url)"
-          >
-            <span v-html="link.label"></span>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </div>
+  <pagination
+    :list="currencies"
+    :links="links"
+    :lastPage="lastPage"
+    @go="loadPage"
+  >
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Nominal</th>
+          <th>Rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="currency in currencies" :key="currency.id">
+          <td>{{ currency.name }}</td>
+          <td>{{ currency.nominal }}</td>
+          <td>{{ currency.rate }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </pagination>
 </template>
 
 <script>
@@ -57,7 +34,7 @@ export default {
     currencies: null,
     links: null,
     lastPage: null,
-    currentUrl: false,
+    currentUrl: null,
   }),
 
   watch: {

@@ -4,14 +4,19 @@
       <div class="col-md-8">
         <div class="card">
           <div class="card-header">
-            <div class="float-left" v-if="baseCurrencyCharCode">
+            <div v-if="baseCurrencyCharCode">
               <button @click="setBaseCurrencyCharCode(null)">Back</button>
               Currency {{ baseCurrencyCharCode }}
             </div>
-            <div class="float-left" v-else>Currencies</div>
-            <div class="float-right">
-              <per-page @selectedPerPage="setPerPage" :num="perPage" />
+            <div v-else>Currencies</div>
+            <div>
+              <per-page
+                class="float-left"
+                @selectedPerPage="setPerPage"
+                :num="perPage"
+              />
               <currency-char-codes
+                class="float-left"
                 @selectedCharCode="setBaseCurrencyCharCode"
                 :charCode="baseCurrencyCharCode"
               />
@@ -33,7 +38,19 @@
 </template>
 
 <script>
+import PerPage from "./PerPage.vue";
+import CurrencyCharCodes from "./CurrencyCharCodes.vue";
+import CurrenciesList from "./CurrenciesList.vue";
+import CurrencyHistory from "./CurrencyHistory.vue";
+
 export default {
+  components: {
+    PerPage,
+    CurrencyCharCodes,
+    CurrenciesList,
+    CurrencyHistory,
+  },
+
   data: () => ({
     perPage: 5,
     baseCurrencyCharCode: null,

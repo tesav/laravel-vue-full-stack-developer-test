@@ -21,4 +21,5 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::get('/currency', 'App\Http\Controllers\CurrencyController@index');
     Route::get('/currency-char-codes', 'App\Http\Controllers\CurrencyController@charCodes');
+    Route::get('/currency-history/{charCode}/', 'App\Http\Controllers\CurrencyController@history');
 });

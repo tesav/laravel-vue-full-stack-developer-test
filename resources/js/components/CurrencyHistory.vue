@@ -1,84 +1,93 @@
 <template>
   <div>
-    <div v-if="currencies === null" class="d-flex justify-content-center">
-      <div class="spinner-border" role="status">
-        <span class="sr-only">Loading...</span>
-      </div>
-    </div>
-    <div v-else-if="!currencies.length" class="d-flex justify-content-center">
-      <div>
-        <span>Not Found</span>
-      </div>
-    </div>
-    <div v-else>
+    <date-range @updateDateRange="updateDates" />
+
+    <pagination
+      :list="dailyRates"
+      :links="links"
+      :lastPage="lastPage"
+      @go="loadPage"
+    >
       <table class="table table-bordered">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Nominal</th>
+            <th>Day</th>
             <th>Rate</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="currency in currencies" :key="currency.id">
-            <td>{{ currency.name }}</td>
-            <td>{{ currency.nominal }}</td>
-            <td>{{ currency.rate }}</td>
+          <tr v-for="rate in dailyRates" :key="rate.id">
+            <td>{{ rate.date }}</td>
+            <td>{{ rate.rate }}</td>
           </tr>
         </tbody>
       </table>
-      <ul v-if="lastPage > 1" class="pagination">
-        <li
-          class="page-item"
-          v-for="link in links"
-          :key="link.label"
-          :class="{ active: link.active }"
-        >
-          <a
-            class="page-link"
-            :href="link.url"
-            @click.prevent="loadPage(link.url)"
-          >
-            <span v-html="link.label"></span>
-          </a>
-        </li>
-      </ul>
-    </div>
+    </pagination>
   </div>
 </template>
 
 <script>
+import moment from "moment";
+import DateRange from "./DateRange";
+
 export default {
+  components: { DateRange },
+
   props: {
     perPage: Number,
+    charCode: String,
   },
 
   data: () => ({
-    currencies: null,
+    dateRange: {
+      startDate: moment().format("YYYY-MM-DD"),
+      endDate: moment().format("YYYY-MM-DD"),
+    },
+    dailyRates: null,
     links: null,
     lastPage: null,
-    currentUrl: false,
+    currentUrl: null,
   }),
 
   watch: {
-    perPage(newVal, oldVal) {
-      this.currencies = null;
+    dateRange() {
+      this.dailyRates = null;
+      this.loadPage();
+    },
+    charCode() {
+      this.dailyRates = null;
+      this.loadPage();
+    },
+    perPage() {
+      this.dailyRates = null;
       this.loadPage();
     },
   },
 
   methods: {
     async loadPage(url = "?page=1") {
-      if (this.currencies === null || (url && this.currentUrl !== url)) {
+      if (this.dailyRates === null || (url && this.currentUrl !== url)) {
         this.currentUrl = url;
+
+        const aQuery = [
+          `per_page=${this.perPage}`,
+          `dt_from=${this.dateRange.startDate}`,
+          `dt_to=${this.dateRange.endDate}`,
+        ];
+
         const {
           data: { data, meta },
-        } = await axios.get(`/api/currency${url}&per_page=${this.perPage}`);
+        } = await axios.get(
+          `/api/currency-history/${this.charCode}/${url}&${aQuery.join("&")}`
+        );
 
-        this.currencies = data;
+        this.dailyRates = data;
         this.links = meta.links;
         this.lastPage = meta.last_page;
       }
+    },
+    updateDates(range) {
+      this.dateRange = range;
     },
   },
 

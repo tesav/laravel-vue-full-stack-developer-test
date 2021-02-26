@@ -46,6 +46,7 @@ export default {
     } = await axios.get("/api/currency-char-codes");
 
     this.currencyCharCodes = data;
+    this.$emit("selectedCharCode", 'USD'); // TODO: temp
   },
 };
 </script>
